@@ -1,4 +1,4 @@
-# Eat What
+# EatWhat
 
 ## Stargazers over time
 
