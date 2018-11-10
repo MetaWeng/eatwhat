@@ -1,4 +1,4 @@
-# shop
+# Eat What
 
 ## Stargazers over time
 
