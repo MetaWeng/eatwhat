@@ -8,6 +8,15 @@
   <meta name="CocoaVersion" content="1504.83">
   <style type="text/css">
     p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    #map {
+        height: 100%;
+    }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
   </style>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 </head>
@@ -17,25 +26,76 @@
   <br/>
   <button id="changeFoodButton" onclick="return getFood();">不要，換一個</button>
   <label id="foodName"></label>
+  <br/>
+  <div id="map"></div>
 </body>
-<script language="JavaScript">
+  <script language="JavaScript">
 
     var foods = ["漢堡","牛肉麵","麥味登","八方雲集","便當","鬍鬚張","麥當勞","地瓜","摩斯漢堡","肯德基"];
     
+    //先來個預設食物
     getFood();
 
+    //取得食物
     function getFood(){
       $('#randomFoodButton').html(foodRandom);
         // $('#foodName').html(foodRandom());
     }
 
+    //隨機取得食物
     function foodRandom(){
       return  foods[Math.floor(Math.random()*foods.length)];
     };
 
+    //開啟GoogleMap
     function getMap(){
 
     }
+
+
+    var latlng = { lat: 25.046891, lng: 121.516602 }; // 給一個初始位置
+
+      var map;
+      var infowindow;
+
+      function initMap() {
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: latlng,
+          zoom: 15
+        });
+
+        infowindow = new google.maps.InfoWindow();
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch({
+          location: latlng,
+          radius: 500,
+          type: ['store']
+        }, callback);
+      }
+
+      function callback(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          for (var i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+          }
+        }
+      }
+
+      function createMarker(place) {
+        var placeLoc = place.geometry.location;
+        var marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.setContent(place.name);
+          infowindow.open(map, this);
+        });
+      }
     
-</script>
+  </script>
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCBWWrcfIitbBf-mrwD2JrkAbf0hfJG9aU&callback=initMap"
+    async defer></script>
 </html>
