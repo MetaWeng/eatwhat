@@ -1,101 +1,176 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="1504.83">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    #map {
-        height: 100%;
-    }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-  </style>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-</head>
-<body>
-  <p class="p1">Eat What</p>
-  <button id="randomFoodButton" onclick="" ></button>
-  <br/>
-  <button id="changeFoodButton" onclick="return getFood();">不要，換一個</button>
-  <label id="foodName"></label>
-  <br/>
-  <div id="map"></div>
-</body>
-  <script language="JavaScript">
 
-    var foods = ["漢堡","牛肉麵","麥味登","八方雲集","便當","鬍鬚張","麥當勞","地瓜","摩斯漢堡","肯德基"];
-    
-    //先來個預設食物
-    getFood();
+<head>
+  <title>Place Searches</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <style>
+    /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+    #map {
+      height: 50%;
+      width: 50%;
+    }
+
+    /* Optional: Makes the sample page fill the window. */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <script>
+    // This example requires the Places library. Include the libraries=places
+    // parameter when you first load the API. For example:
+    // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+    var map;
+    var infowindow;
+    var mapInfowindow;
+    var mylocation = { lat: 25.0901847, lng: 121.469728 };
+    var service;
+    var markers = [];
+    var defaultPlace;
+
+    function initMap() {
+      var pyrmont = { lat: 25.0847194, lng: 121.4741826 };
+
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: pyrmont,
+        zoom: 16
+      });
+
+      infoWindow = new google.maps.InfoWindow;
+      mapInfowindow = new google.maps.InfoWindow();
+      service = new google.maps.places.PlacesService(map);
+
+      // Try HTML5 geolocation.
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          mylocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          infoWindow.setPosition(mylocation);
+          infoWindow.setContent('目前位置');
+          infoWindow.open(map);
+          map.setCenter(mylocation);
+
+
+        }, function () {
+          handleLocationError(true, infoWindow, map.getCenter());
+        });
+      } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+      }
+
+    }
+
+    function createMarker(place) {
+
+      //取得詳細資訊
+      service.getDetails({
+        placeId: place.place_id
+      }, function (place, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          var marker = new google.maps.Marker({
+            map: map,
+            position: place.geometry.location
+          });
+          
+          
+          marker.setMap(map);
+          markers.push(marker);
+          google.maps.event.addListener(marker, 'click', function () {
+            mapInfowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+              'Place ID: ' + place.place_id + '<br>' +
+              'rating:' + place.rating + '<br>' +
+              place.formatted_address + '</div>');
+            mapInfowindow.open(map, this);
+
+            //改變導航url
+            $('#navigation').attr("href", "https://maps.google.com/?q=" + place.formatted_address);
+
+            defaultPlace = place;
+          });
+        }
+      });
+
+    }
+
+    function callback(results, status) {
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+      }
+      markers = [];
+      if (status == google.maps.places.PlacesServiceStatus.OK) {
+        for (var i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+      } else {
+        alert('附近沒有' + $('#randomFoodButton').text() + '喔');
+      }
+    }
+
+    function searchMap() {
+      $('#map').show();
+      var food = $('#randomFoodButton').text();
+      //alert(food);
+
+      service.nearbySearch({
+        location: mylocation,
+        radius: 500,
+        keyword: food
+      }, callback);
+
+    }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+      infoWindow.setPosition(pos);
+      infoWindow.setContent(browserHasGeolocation ?
+        'Error: The Geolocation service failed.' :
+        'Error: Your browser doesn\'t support geolocation.');
+      infoWindow.open(map);
+    }
+
+    var foods = ["漢堡", "牛肉麵", "麥味登", "八方雲集", "便當", "鬍鬚張", "麥當勞", "地瓜", "摩斯漢堡", "肯德基"]; //["八方雲集"];
+
 
     //取得食物
-    function getFood(){
+    function getFood() {
       $('#randomFoodButton').html(foodRandom);
-        // $('#foodName').html(foodRandom());
+      // $('#foodName').html(foodRandom());
     }
 
     //隨機取得食物
-    function foodRandom(){
-      return  foods[Math.floor(Math.random()*foods.length)];
+    function foodRandom() {
+      return foods[Math.floor(Math.random() * foods.length)];
     };
 
-    //開啟GoogleMap
-    function getMap(){
 
+    window.onload = function () {
+      //先來個預設食物
+      getFood();
     }
-
-
-    var latlng = { lat: 25.046891, lng: 121.516602 }; // 給一個初始位置
-
-      var map;
-      var infowindow;
-
-      function initMap() {
-
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: latlng,
-          zoom: 15
-        });
-
-        infowindow = new google.maps.InfoWindow();
-        var service = new google.maps.places.PlacesService(map);
-        service.nearbySearch({
-          location: latlng,
-          radius: 500,
-          type: ['store']
-        }, callback);
-      }
-
-      function callback(results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          for (var i = 0; i < results.length; i++) {
-            createMarker(results[i]);
-          }
-        }
-      }
-
-      function createMarker(place) {
-        var placeLoc = place.geometry.location;
-        var marker = new google.maps.Marker({
-          map: map,
-          position: place.geometry.location
-        });
-
-        google.maps.event.addListener(marker, 'click', function() {
-          infowindow.setContent(place.name);
-          infowindow.open(map, this);
-        });
-      }
-    
   </script>
-    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCBWWrcfIitbBf-mrwD2JrkAbf0hfJG9aU&callback=initMap"
+</head>
+
+<body>
+  <button id="randomFoodButton" onclick="return searchMap();"></button>
+  <br />
+  <button id="changeFoodButton" onclick="return getFood();">不要，換一個</button>
+  <label id="foodName"></label>
+  <br />
+  <div id="map"></div>
+  <br>
+  <a href="" id="navigation">導航</a>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBWWrcfIitbBf-mrwD2JrkAbf0hfJG9aU&libraries=places&callback=initMap"
     async defer></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</body>
+
 </html>
