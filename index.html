@@ -177,10 +177,13 @@
       return foods[Math.floor(Math.random() * foods.length)];
     };
 
+    function searchShow(){
+      getFood();
+    }
 
     window.onload = function () {
       //先來個預設食物
-      getFood();
+      // getFood();
     }
   </script>
 </head>
@@ -190,10 +193,11 @@
     <button style="width:126px;height:38px;background-image:url('/images/eatwhat.jpg');border: hidden;"></button>
     <br /><br />
     <br />
-    <button id="randomFoodButton" onclick="return searchMap();" style="width:92px;height:46px;"></button>
+    <button id="randomFoodButton" onclick="return searchMap(); " style="width:92px;height:46px; border:2px #2a373d solid;" > EAT WHAT</button>
 
     <br /><br />
-
+    <button id="searchButton" onclick="return searchShow();">搜尋</button>
+    <br /><br />
     <button style="width:44px;height:44px;background-image:url('/images/ok.jpg');border: hidden;"></button>
 
     <button id="changeFoodButton" onclick="return getFood();" style="width:44px;height:44px;background-image:url('/images/no.jpg');border: hidden;"></button>
