@@ -14,11 +14,35 @@
     }
 
     /* Optional: Makes the sample page fill the window. */
-    html,
-    body {
+    html {
       height: 100%;
-      margin: 0;
-      padding: 0;
+    }
+
+    body {
+      background-size: 65% auto;
+      background-image: url('/images/index.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: center;
+      background-color: black;
+    }
+
+    #bg {
+      width: 128;
+      height: 100;
+
+
+
+      position: absolute;
+      top: 50%;
+      left: 50%;
+
+      margin-left: -270px;
+      margin-top: -100px;
+    }
+
+    button {
+      outline: none;
     }
   </style>
   <script>
@@ -80,8 +104,8 @@
             map: map,
             position: place.geometry.location
           });
-          
-          
+
+
           marker.setMap(map);
           markers.push(marker);
           google.maps.event.addListener(marker, 'click', function () {
@@ -159,10 +183,21 @@
 </head>
 
 <body>
-  <button id="randomFoodButton" onclick="return searchMap();"></button>
-  <br />
-  <button id="changeFoodButton" onclick="return getFood();">不要，換一個</button>
-  <label id="foodName"></label>
+  <div id="bg">
+    <button style="width:126px;height:38px;background-image:url('/images/eatwhat.jpg');border: hidden;"></button>
+    <br /><br />
+    <br />
+    <button id="randomFoodButton" onclick="return searchMap();" style="width:92px;height:46px;"></button>
+
+    <br /><br />
+
+    <button style="width:44px;height:44px;background-image:url('/images/ok.jpg');border: hidden;"></button>
+
+    <button id="changeFoodButton" onclick="return getFood();" style="width:44px;height:44px;background-image:url('/images/no.jpg');border: hidden;"></button>
+
+    <label id="foodName"></label>
+
+  </div>
   <br />
   <div id="map"></div>
   <br>
