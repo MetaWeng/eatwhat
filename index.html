@@ -20,7 +20,7 @@
 
     body {
       background-size: 65% auto;
-      background-image: url('/images/index.jpg');
+      background-image: url('https://github.com/MetaWeng/eatwhat/blob/master/images/index.jpg?raw=true');
       background-repeat: no-repeat;
       background-attachment: fixed;
       background-position: center;
@@ -34,20 +34,19 @@
       width: 128;
       height: 100;
 
-
-
       position: absolute;
       top: 50%;
       left: 50%;
 
       margin-left: -270px;
-      margin-top: -100px;
+      margin-top: -90px;
     }
 
     button {
       outline: none;
     }
   </style>
+	
   <script>
     // This example requires the Places library. Include the libraries=places
     // parameter when you first load the API. For example:
@@ -75,7 +74,7 @@
 
       // Try HTML5 geolocation.
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
+		  navigator.geolocation.getCurrentPosition(function (position) {
           mylocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
@@ -85,7 +84,6 @@
           infoWindow.open(map);
           map.setCenter(mylocation);
 
-
         }, function () {
           handleLocationError(true, infoWindow, map.getCenter());
         });
@@ -93,7 +91,6 @@
         // Browser doesn't support Geolocation
         handleLocationError(false, infoWindow, map.getCenter());
       }
-
     }
 
     function createMarker(place) {
@@ -107,7 +104,6 @@
             map: map,
             position: place.geometry.location
           });
-
 
           marker.setMap(map);
           markers.push(marker);
@@ -125,7 +121,6 @@
           });
         }
       });
-
     }
 
     function callback(results, status) {
@@ -152,7 +147,6 @@
         radius: 500,
         keyword: food
       }, callback);
-
     }
 
     function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -163,8 +157,7 @@
       infoWindow.open(map);
     }
 
-    var foods = ["漢堡", "牛肉麵", "麥味登", "八方雲集", "便當", "鬍鬚張", "麥當勞", "地瓜", "摩斯漢堡", "肯德基"]; //["八方雲集"];
-
+    var foods = ["漢堡", "牛肉麵", "麥味登", "八方雲集", "便當", "鬍鬚張", "麥當勞", "地瓜", "摩斯漢堡", "肯德基"]; //["八方雲集"];
 
     //取得食物
     function getFood() {
@@ -190,17 +183,23 @@
 
 <body>
   <div id="bg">
-    <button style="width:126px;height:38px;background-image:url('/images/eatwhat.jpg');border: hidden;"></button>
-    <br /><br />
+	  
+	<div align="center"> 
+    <button id="randomFoodButton" onclick="return searchMap();" style="width:126px;height:38px; border:2.5px #2a373d solid;" >EAT WHAT</button>
+	  </div>
+		
     <br />
-    <button id="randomFoodButton" onclick="return searchMap(); " style="width:92px;height:46px; border:2px #2a373d solid;" > EAT WHAT</button>
-
+	  
+	<div align="center">  
+    <button id="searchButton" onclick="return searchShow();" style="width:126px;height:38px; border:2.5px #2a373d solid;" >SEARCH</button>
     <br /><br />
-    <button id="searchButton" onclick="return searchShow();">搜尋</button>
-    <br /><br />
-    <button style="width:44px;height:44px;background-image:url('/images/ok.jpg');border: hidden;"></button>
-
-    <button id="changeFoodButton" onclick="return getFood();" style="width:44px;height:44px;background-image:url('/images/no.jpg');border: hidden;"></button>
+	</div>
+	
+	<div align="center">
+    <button style="width:44px;height:44px;background-image:url('https://github.com/MetaWeng/eatwhat/blob/master/images/ok.jpg?raw=true');border: hidden;"></button>
+		
+    <button id="changeFoodButton" onclick="return getFood();" style="width:44px;height:44px;background-image:url('https://github.com/MetaWeng/eatwhat/blob/master/images/no.jpg?raw=true');border: hidden;"></button>
+	  </div>
 
     <label id="foodName"></label>
   </div>
