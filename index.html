@@ -1,218 +1,225 @@
 <!DOCTYPE html>
 <html>
+	<head>
 
-<head>
-  <title>Place Searches</title>
-  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-  <meta charset="utf-8">
-  <style>
-    /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-    #map {
-      height: 50%;
-      width: 50%;
-    }
-
-    /* Optional: Makes the sample page fill the window. */
-    html {
-      height: 100%;
-    }
-
-    body {
-      background-size: 65% auto;
-      background-image: url('https://github.com/MetaWeng/eatwhat/blob/master/images/index.jpg?raw=true');
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-position: center;
-      background-color: black;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-
-    #bg {
-      width: 128;
-      height: 100;
-
-      position: absolute;
-      top: 50%;
-      left: 50%;
-
-      margin-left: -270px;
-      margin-top: -90px;
-    }
-
-    button {
-      outline: none;
-    }
-  </style>
-	
-  <script>
-    // This example requires the Places library. Include the libraries=places
-    // parameter when you first load the API. For example:
-    // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-
-    var map;
-    var infowindow;
-    var mapInfowindow;
-    var mylocation = { lat: 25.0901847, lng: 121.469728 };
-    var service;
-    var markers = [];
-    var defaultPlace;
-
-    function initMap() {
-      var pyrmont = { lat: 25.0847194, lng: 121.4741826 };
-
-      map = new google.maps.Map(document.getElementById('map'), {
-        center: pyrmont,
-        zoom: 16
-      });
-
-      infoWindow = new google.maps.InfoWindow;
-      mapInfowindow = new google.maps.InfoWindow();
-      service = new google.maps.places.PlacesService(map);
-
-      // Try HTML5 geolocation.
-      if (navigator.geolocation) {
-		  navigator.geolocation.getCurrentPosition(function (position) {
-          mylocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          infoWindow.setPosition(mylocation);
-          infoWindow.setContent('目前位置');
-          infoWindow.open(map);
-          map.setCenter(mylocation);
-
-        }, function () {
-          handleLocationError(true, infoWindow, map.getCenter());
-        });
-      } else {
-        // Browser doesn't support Geolocation
-        handleLocationError(false, infoWindow, map.getCenter());
-      }
-    }
-
-    function createMarker(place) {
-
-      //取得詳細資訊
-      service.getDetails({
-        placeId: place.place_id
-      }, function (place, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          var marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location
-          });
-
-          marker.setMap(map);
-          markers.push(marker);
-          google.maps.event.addListener(marker, 'click', function () {
-            mapInfowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
-              'Place ID: ' + place.place_id + '<br>' +
-              'rating:' + place.rating + '<br>' +
-              place.formatted_address + '</div>');
-            mapInfowindow.open(map, this);
-
-            //改變導航url
-            $('#navigation').attr("href", "https://maps.google.com/?q=" + place.formatted_address);
-
-            defaultPlace = place;
-          });
-        }
-      });
-    }
-
-    function callback(results, status) {
-      for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
-      }
-      markers = [];
-      if (status == google.maps.places.PlacesServiceStatus.OK) {
-        for (var i = 0; i < results.length; i++) {
-          createMarker(results[i]);
-        }
-      } else {
-        alert('附近沒有' + $('#randomFoodButton').text() + '喔');
-      }
-    }
-
-    function searchMap() {
-      $('#map').show();
-      var food = $('#randomFoodButton').text();
-      //alert(food);
-
-      service.nearbySearch({
-        location: mylocation,
-        radius: 500,
-        keyword: food
-      }, callback);
-    }
-
-    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-      infoWindow.setPosition(pos);
-      infoWindow.setContent(browserHasGeolocation ?
-        'Error: The Geolocation service failed.' :
-        'Error: Your browser doesn\'t support geolocation.');
-      infoWindow.open(map);
-    }
-
-    var foods = ["漢堡", "牛肉麵", "麥味登", "八方雲集", "便當", "鬍鬚張", "麥當勞", "地瓜", "摩斯漢堡", "肯德基"]; //["八方雲集"];
-
-    //取得食物
-    function getFood() {
-      $('#randomFoodButton').html(foodRandom);
-      // $('#foodName').html(foodRandom());
-    }
-
-    //隨機取得食物
-    function foodRandom() {
-      return foods[Math.floor(Math.random() * foods.length)];
-    };
-
-    function searchShow(){
-      getFood();
-    }
-
-    window.onload = function () {
-      //先來個預設食物
-      // getFood();
-    }
-  </script>
-</head>
-
-<body>
-  <div id="bg">
-	  
-	<div align="center"> 
-    <button id="randomFoodButton" onclick="return searchMap();" style="width:126px;height:38px; border:2.5px #2a373d solid;" >EAT WHAT</button>
-	  </div>
+		<title>EAT WHAT</title>
 		
-    <br />
-	  
-	<div align="center">  
-    <button id="searchButton" onclick="return searchShow();" style="width:126px;height:38px; border:2.5px #2a373d solid;" >SEARCH</button>
-    <br /><br />
-	</div>
-	
-	<div align="center">
-    <button style="width:44px;height:44px;background-image:url('https://github.com/MetaWeng/eatwhat/blob/master/images/ok.jpg?raw=true');border: hidden;"></button>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta charset="utf-8">
 		
-    <button id="changeFoodButton" onclick="return getFood();" style="width:44px;height:44px;background-image:url('https://github.com/MetaWeng/eatwhat/blob/master/images/no.jpg?raw=true');border: hidden;"></button>
-	  </div>
+		<style>
+			/* Always set the map height explicitly to define the size of the div
+			* element that contains the map. */
+			
+			/*#map {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+			}*/
+			
+			/* Optional: Makes the sample page fill the window. */
+			html {
+				height: 100%;
+			}
+			
+    		body {
+			  background-size: 65% auto;
+			  background-image: url('https://github.com/MetaWeng/eatwhat/blob/master/images/index.jpg?raw=true');
+			  background-repeat: no-repeat;
+			  background-attachment: fixed;
+			  background-position: center;
+			  background-color: black;
+			  height: 100%;
+			  margin: 0;
+			  padding: 0;
+			}
 
-    <label id="foodName"></label>
-  </div>
+			#bg {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				
+				margin-left: -26.7%;
+				margin-top: -17%;
+			}
 
-  <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+			button {
+			  outline: none;
+			}
+		
+		</style>
+		
+		<script>
+			// This example requires the Places library. Include the libraries=places
+			// parameter when you first load the API. For example:
+			// <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+			var map;
+			var infowindow;
+			var mapInfowindow;
+			var mylocation = { lat: 25.0901847, lng: 121.469728 };
+			var service;
+			var markers = [];
+			var defaultPlace;
+
+			function initMap() {
+				var pyrmont = { lat: 25.0847194, lng: 121.4741826 };
+				map = new google.maps.Map(document.getElementById('map'), {
+					center: pyrmont,
+					zoom: 16
+			});
+				
+			infoWindow = new google.maps.InfoWindow;
+			mapInfowindow = new google.maps.InfoWindow();
+			service = new google.maps.places.PlacesService(map);
+
+      		// Try HTML5 geolocation.
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function (position) {
+					mylocation = {
+						lat: position.coords.latitude,
+						lng: position.coords.longitude
+					};
+					infoWindow.setPosition(mylocation);
+					infoWindow.setContent('目前位置');
+					infoWindow.open(map);
+					map.setCenter(mylocation);
+				}, function () {
+					handleLocationError(true, infoWindow, map.getCenter());
+				});
+			} 
+				else {
+				// Browser doesn't support Geolocation
+				handleLocationError(false, infoWindow, map.getCenter());
+				}
+			}
+			
+			function createMarker(place) {
+				
+				// 取得詳細資訊
+				service.getDetails({
+					placeId: place.place_id
+				}, function (place, status) {
+					if (status === google.maps.places.PlacesServiceStatus.OK) {
+						var marker = new google.maps.Marker({
+							map: map,
+							position: place.geometry.location
+						});
+						
+						marker.setMap(map);
+						markers.push(marker);
+						google.maps.event.addListener(marker, 'click', function () {
+							mapInfowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+													 'Place ID: ' + place.place_id + '<br>' +
+													 'rating:' + place.rating + '<br>' +
+													 place.formatted_address + '</div>');
+							mapInfowindow.open(map, this);
+							// 改變導航url
+							$('#navigation').attr("href", "https://maps.google.com/?q=" + place.formatted_address);
+							defaultPlace = place;
+						});
+					}
+				});
+			}
+			
+			function callback(results, status) {
+				for (var i = 0; i < markers.length; i++) {
+					markers[i].setMap(null);
+				}
+				markers = [];
+				if (status == google.maps.places.PlacesServiceStatus.OK) {
+					for (var i = 0; i < results.length; i++) {
+						createMarker(results[i]);
+					}
+				} else {
+					alert('附近沒有' + $('#randomFoodButton').text() + '喔');
+				}
+			}
+			
+			function searchMap() {
+				$('#map').show();
+				var food = $('#randomFoodButton').text();
+				// alert(food);
+				service.nearbySearch({
+					location: mylocation,
+					radius: 500,
+					keyword: food
+				}, callback);
+			}
+			
+			function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+				infoWindow.setPosition(pos);
+				infoWindow.setContent(browserHasGeolocation ?
+									  'Error: The Geolocation service failed.' :
+									  'Error: Your browser doesn\'t support geolocation.');
+				infoWindow.open(map);
+			}
+			
+			// ["八方雲集"];
+			var foods = ["漢堡", "牛肉麵", "麥味登", "八方雲集", "便當", "鬍鬚張", "麥當勞", "地瓜", "摩斯漢堡", "肯德基"];
+			
+			// 取得食物
+			function getFood() {
+				$('#randomFoodButton').html(foodRandom);
+				// $('#foodName').html(foodRandom());
+			}
+			
+			// 隨機取得食物
+			function foodRandom() {
+				return foods[Math.floor(Math.random() * foods.length)];
+			};
+			
+			function searchShow(){
+				getFood();
+			}
+			
+			window.onload = function () {
+				// 先來個預設食物
+				// getFood();
+			}
+		</script>
+	</head>
 	
-  <div id="map"></div>
-  <br>
-  <a href="" id="navigation">導航</a>
-
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBWWrcfIitbBf-mrwD2JrkAbf0hfJG9aU&libraries=places&callback=initMap"
-    async defer></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-</body>
-
+	<body>
+		
+		<div id="bg">
+			
+			<div align="center">
+				<button id="randomFoodButton" onclick="return searchMap();" style="width:126px;height:38px; border:2.5px #2a373d solid;" >EAT WHAT</button>
+			</div>
+			
+			<br />
+			
+			<div align="center">  
+				<button id="searchButton" onclick="return searchShow();" style="width:126px;height:38px; border:2.5px #2a373d solid;" >SEARCH</button>
+			</div>
+			
+			<br />
+			
+			<div align="center" id="map" style="width:270px;height:270px;"></div>
+			
+			<br />
+			
+			<div align="center">
+			<a href="" id="navigation">導航</a>
+			</div>
+			
+			<!--<div align="center">
+				<button style="width:44px;height:44px;background-image:url('https://github.com/MetaWeng/eatwhat/blob/master/images/ok.jpg?raw=true');border: hidden;"></button>
+				
+				<button id="changeFoodButton" onclick="return getFood();" style="width:44px;height:44px;background-image:url('https://github.com/MetaWeng/eatwhat/blob/master/images/no.jpg?raw=true');border: hidden;"></button>
+			</div>-->
+			
+			<label id="foodName"></label>
+			
+		</div>
+		
+		
+		
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBWWrcfIitbBf-mrwD2JrkAbf0hfJG9aU&libraries=places&callback=initMap"
+				async defer></script>
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	 
+	</body>
 </html>
