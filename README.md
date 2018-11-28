@@ -1,6 +1,6 @@
 # EatWhat
 
-將完成 https://metaweng.github.io/eatwhat
+https://metaweng.github.io/eatwhat
 
 ## Stargazers over time
 
